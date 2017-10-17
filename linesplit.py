@@ -1,4 +1,27 @@
 # Script for splitting line data to the present working directory
+"""
+   Purpose:
+      Splitting spectral line data from the calibrated,
+      uv continuum subtracted CASA ms.
+
+
+   Version:
+      v0: Created by Baobab Liu on 2017Oct16. 
+          This version is based on CASA 5.0.0-218
+
+   Usage:
+      Include the line rest frequencies in the file linebasecasa.py.
+      Then edit the Section "Spectral line table" to setup the starting
+      channel, channel width, and number of channels for individual lines.
+      It is possible to make identical setup using loops.
+
+
+   Problem:
+      When a line is detected in two spectral windows, the present version
+      cannot make the sensible decision.
+
+"""
+from linebasecasa import *  # importing line database
 
 # Calibration
 
@@ -18,28 +41,28 @@ if (thesteps==[]):
   print 'Executing all steps: ', thesteps
 
 ##### Spectral line table ##########################
-freqdict  = {}
 nchandict = {}
 startdict = {}
 widthdict = {}
 
-line = 'h30alpha'
-freqdict[line]  =  '231.90093'
-nchandict[line] =  140
-startdict[line] =  '8.0km/s'
-widthdict[line] =  '1.4km/s'
-
-line = 'he30alpha'
-freqdict[line] = '231.99543'
-nchandict[line] =  140
-startdict[line] =  '8.0km/s'
-widthdict[line] =  '1.4km/s'
-
-
+# the specified lines to be splitted from the measurement sets
 linetosplit  = [
-                'h30alpha', 
-                'he30alpha'
+                # 'h30alpha', 
+                # 'he30alpha'
+                'c30alpha',
+                # '13cs_5to4',
                ]
+
+molecular = ['13cs_5to4']
+
+
+rrl = ['h30alpha', 'he30alpha', 'c30alpha']
+for line in rrl:
+   nchandict[line] =  140
+   startdict[line] =  '8.0km/s'
+   widthdict[line] =  '1.4km/s'
+
+
 fieldtosplit = [
                 'G33.92+0.11'
                ]
