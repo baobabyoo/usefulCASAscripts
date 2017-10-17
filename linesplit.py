@@ -49,11 +49,19 @@ widthdict = {}
 linetosplit  = [
                 # 'h30alpha', 
                 # 'he30alpha'
-                'c30alpha',
+                # 'c30alpha',
                 # '13cs_5to4',
+                'sio_5to4'
                ]
 
-molecular = ['13cs_5to4']
+narrowline = ['13cs_5to4']
+
+
+broadline  = ['sio_5to4']
+for line in broadline:
+   nchandict[line] =  140
+   startdict[line] =  '8.0km/s'
+   widthdict[line] =  '1.4km/s'
 
 
 rrl = ['h30alpha', 'he30alpha', 'c30alpha']
@@ -128,6 +136,58 @@ vistosplit = [
 
 
 
+# a function to pick the appropriate spectral window to split
+def spwpick(msname, restfreq):
+   """
+   Purpose:
+      From the input ms, based on the specified rest frequency,
+      specify the spectral window to be split.
+
+
+   Input:
+      manam [string]: the name (or path+name) of the CASA measurement set to be split.
+      restfreq [float]: rest frequency in unit of Hz.
+
+
+   Return:
+      yourspw [integer]: the spectral window ID to be split
+   """
+
+   # Deciding in which spw is the selected line (without considering doppler velocity yet)
+   ms.open(msname)
+
+   # get all spectral window IDs other than those associated with square law detectors  
+   spwInfo = ms.getspectralwindowinfo()
+   # print ( spwInfo )
+
+   for window in spwInfo:
+      # print ( spwInfo[window]['SpectralWindowId'], "\n" )
+      # print ( spwInfo[window]['Chan1Freq'] )  # Hz
+      # print ( spwInfo[window]['TotalWidth'] ) # Hz
+      # print ( spwInfo[window]['ChanWidth']  ) # Hz
+      # print ( "\n" )
+
+      if ( spwInfo[window]['ChanWidth'] > 0.0 ):
+         bandlow = spwInfo[window]['Chan1Freq']
+         bandup  = spwInfo[window]['Chan1Freq'] + spwInfo[window]['TotalWidth']
+      else:
+         bandlow = spwInfo[window]['Chan1Freq'] - spwInfo[window]['TotalWidth']
+         bandup  = spwInfo[window]['Chan1Freq']
+
+      if (
+          ( restfreq > bandlow )
+          and
+          ( restfreq < bandup )
+         ):
+         return spwInfo[window]['SpectralWindowId']
+
+   ms.close()
+
+
+
+
+
+
 
 
 ### Stokes  clean images of the polarization calibrator
@@ -149,37 +209,11 @@ if(mystep in thesteps):
 
         for vis in vistosplit:
 
-           # Deciding in which spw is the selected line (without considering doppler velocity yet)
-           ms.open(pathdict[vis] + visdict[vis])  
-
-           # get all spectral window IDs other than those associated with square law detectors  
-           spwInfo = ms.getspectralwindowinfo()
-           # print ( spwInfo )
-           for window in spwInfo:
-              # print ( spwInfo[window]['SpectralWindowId'], "\n" )
-              # print ( spwInfo[window]['Chan1Freq'] )  # Hz
-              # print ( spwInfo[window]['TotalWidth'] ) # Hz
-              # print ( spwInfo[window]['ChanWidth']  ) # Hz
-              # print ( "\n" )
-
-              linefreq = float( freqdict[line] ) * 1e9
-              if ( spwInfo[window]['ChanWidth'] > 0.0 ):
-                 bandlow = spwInfo[window]['Chan1Freq']
-                 bandup  = spwInfo[window]['Chan1Freq'] + spwInfo[window]['TotalWidth']
-              else:
-                 bandlow = spwInfo[window]['Chan1Freq']
-                 bandup  = spwInfo[window]['Chan1Freq'] + spwInfo[window]['TotalWidth']
-
-              if (
-                  ( linefreq > bandlow )
-                   and
-                  ( linefreq < bandup )
-                 ):
-                 yourspw = spwInfo[window]['SpectralWindowId']
-                 print ( line, ' is in spectral window :', yourspw )
-
-           ms.close()
-
+           # picking the right spectral window
+           msname   = pathdict[vis] + visdict[vis]
+           linefreq = float( freqdict[line] ) * 1e9
+           yourspw = spwpick(msname, linefreq)
+           print ( line, ' is in spectral window :', yourspw )
 
            # defining output filename
            outputvis = visdict[vis] + '.' + line
