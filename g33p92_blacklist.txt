@@ -1,0 +1,5 @@
+# ms filename(a single string variable)    spw(a single integer)
+uid___A002_X8081ba_X31e3.ms.split.cal.contsub 0
+# uid___A002_X8081ba_X31e3.ms.split.cal.contsub 1
+# uid___A002_X8081ba_X31e3.ms.split.cal.contsub 2
+# uid___A002_X8081ba_X31e3.ms.split.cal.contsub 3
