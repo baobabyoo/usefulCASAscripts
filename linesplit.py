@@ -53,32 +53,144 @@ widthdict = {}
 
 # the specified lines to be splitted from the measurement sets
 linetosplit  = [
+                # done splitting
                 # 'h30alpha', 
                 # 'he30alpha'
                 # 'c30alpha',
-                '13cs_5to4',
+                # '13cs_5to4',
                 # 'sio_5to4'
+                # to be splitted
+                'c-c3h2_3l3c0to2l2c1',
+                'ccd_N3to2_J7o2to5o2_F9o2to7o2',
+                'ccd_N3to2_J7o2to5o2_F7o2to5o2',
+                'ccd_N3to2_J5o2to3o2_F7o2to5o2',
+                'ccd_N3to2_J5o2to3o2_F3o2to1o2',
+                'ch3cho_11l1c10to10l1c9_E',
+                'ch3cho_11l1c10to10l1c9_A',
+                'hdcs_7l0c7to6l0c6',
+                'hdcs_7l2c6to6l2c5',
+                'hdcs_7l2c5to6l2c4',
+                'h2s_2l2c0to2l1c1',
+                'ch3oh_5l1c4to4l2c2',
+                'dcn_3to2',
+                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to1',
+                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to2',
+                '13cn_N2to1_J3o2to1o2_Fone1to0_F0to1',
+                '13cn_N2to1_J3o2to1o2_Fone1to0_F1to1',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to2',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to1',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to0',
+                '13cn_N2to1_J5o2to3o2_Fone2to2_F2to2',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to1',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F3to2',
+                '13cn_N2to1_J3o2to1o2_Fone1to0_F2to1',
+                '13cn_N2to1_J5o2to3o2_Fone2to2_F3to3',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F3to2',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to1',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to2',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F1to1',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F4to3',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to1',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to2',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F3to3',
+                't-c2h5oh_5l3c3-4l2c2',
+                'c-hccch_6l1c6-5l0c5',
+                'c-hccch_5l1c4-4l2c3',
+                'ch3cn_12to11_K4',
+                'ch3cn_12to11_K3',
+                'ch3cn_12to11_K2',
+                'ch3cn_12to11_K1',
+                'ch3cn_12to11_K0',
+                'ocs_19to18',
+                'n2dp_3to2',
+                'ch3och3_13l0c13to12l1c12_EE',
+                'h2c34S_7l1c7to6l1c6'
                ]
 
-narrowline = ['13cs_5to4']
+
+
+narrowline = [
+              '13cs_5to4',
+              'ch3cn_12to11_K4',
+              'ch3cn_12to11_K3',
+              'ch3cn_12to11_K2',
+              'ch3cn_12to11_K1',
+              'ch3cn_12to11_K0',
+              'n2dp_3to2'  # may need to do this one again. not sure if the velocity range of spw 0 is sufficient
+             ]
+
+broadline  = [
+              'sio_5to4'
+             ]
+
+narrowline_coarse  = [
+                'c-c3h2_3l3c0to2l2c1',
+                'ccd_N3to2_J7o2to5o2_F9o2to7o2',
+                'ccd_N3to2_J7o2to5o2_F7o2to5o2',
+                'ccd_N3to2_J5o2to3o2_F7o2to5o2',
+                'ccd_N3to2_J5o2to3o2_F3o2to1o2',
+                'ch3cho_11l1c10to10l1c9_E',
+                'ch3cho_11l1c10to10l1c9_A',
+                'hdcs_7l0c7to6l0c6',
+                'hdcs_7l2c6to6l2c5',
+                'hdcs_7l2c5to6l2c4',
+                'h2s_2l2c0to2l1c1',
+                'ch3oh_5l1c4to4l2c2',
+                'dcn_3to2',
+                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to1',
+                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to2',
+                '13cn_N2to1_J3o2to1o2_Fone1to0_F0to1',
+                '13cn_N2to1_J3o2to1o2_Fone1to0_F1to1',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to2',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to1',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to0',
+                '13cn_N2to1_J5o2to3o2_Fone2to2_F2to2',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to1',
+                '13cn_N2to1_J3o2to1o2_Fone2to1_F3to2',
+                '13cn_N2to1_J3o2to1o2_Fone1to0_F2to1',
+                '13cn_N2to1_J5o2to3o2_Fone2to2_F3to3',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F3to2',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to1',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to2',
+                '13cn_N2to1_J5o2to3o2_Fone2to1_F1to1',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F4to3',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to1',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to2',
+                '13cn_N2to1_J5o2to3o2_Fone3to2_F3to3',
+                't-c2h5oh_5l3c3-4l2c2',
+                'c-hccch_6l1c6-5l0c5',
+                'c-hccch_5l1c4-4l2c3',
+                'ocs_19to18',
+                'ch3och3_13l0c13to12l1c12_EE',
+                'h2c34S_7l1c7to6l1c6'
+             ]
+
+rrl = ['h30alpha', 'he30alpha', 'c30alpha']
+
+
+
 for line in narrowline:
    nchandict[line] =  80
    startdict[line] =  '100.0 km/s'
-   widthdict[line] =  '0.17' # km/s
+   widthdict[line] =  '0.18' # km/s
 
-
-broadline  = ['sio_5to4']
 for line in broadline:
    nchandict[line] =  140
    startdict[line] =  '8.0km/s'
    widthdict[line] =  '1.4' # km/s
 
+for line in narrowline_coarse:
+   nchandict[line] =  10
+   startdict[line] =  '100.0km/s'
+   widthdict[line] =  '1.4' # km/s
 
-rrl = ['h30alpha', 'he30alpha', 'c30alpha']
 for line in rrl:
    nchandict[line] =  140
    startdict[line] =  '8.0km/s'
    widthdict[line] =  '1.4' # km/s
+
+
+
 
 
 fieldtosplit = [
@@ -192,12 +304,48 @@ def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
    # get all spectral window IDs other than those associated with square law detectors  
    spwInfo = ms.getspectralwindowinfo()
 
+   ###############################################################################
+#   scanInfo  = ms.getscansummary()
+#   num_scan  = len( scanInfo.keys() )
+#   begintime = 0.0
+#   # deriving the averaged begin time from all scans
+#   for scan in scanInfo.keys():
+#      begintime += scanInfo[scan]['0']['BeginTime'] / num_scan
+#   print( begintime )
+#
+#   # define a coordinate system for executing frequency frame transformation
+#   csys = cs.newcoordsys(direction=True, spectral=True)  
+#   # print csys.summary(list=False)  
+# 
+#   # reset the epoch to the epoch of the observing time
+#   ep = csys.epoch()
+#   ep['m0']['value'] = begintime
+#   csys.setepoch(ep)
+#   ep = csys.epoch()
+#
+#   # reset the observatory to ALMA
+#   csys.settelescope('ALMA')
+#
+#   # reset the direction to target source coordinate
+#   csys.setdirection (refcode='J2000', proj='SIN', projpar=[0,0],  
+#                   refpix=[0, 0], refval="180deg -20deg")
+#   print csys.projection()
+#   print csys.referencepixel()
+#   print csys.referencevalue(format='s')
+#
+#   # print csys.summary(list=False)
+#    
+#   ###############################################################################
+
    # make the black list here by editing spwInfo:
    # print ( spwInfo )
 
    # initialize return
    yourspw    = -1
    spwHzwidth = 0.0
+
+   vlsr_kmpers  = 107.6 # km/s
+   doppler_freq = restfreq * ( vlsr_kmpers / c_kmpers )
 
    for window in spwInfo:
       if ( window not in maskedspw ):
@@ -214,6 +362,9 @@ def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
          else:
             bandlow = spwInfo[window]['Chan1Freq'] - spwInfo[window]['TotalWidth']
             bandup  = spwInfo[window]['Chan1Freq']
+
+         bandlow = bandlow + doppler_freq
+         bandup  = bandup  + doppler_freq
 
          if (
              ( restfreq > bandlow )
@@ -302,6 +453,7 @@ if(mystep in thesteps):
   for line in linetosplit:
      for field in fieldtosplit:
 
+        print ( "\n")
         print ( "###########  Splitting :", line, 'at', freqdict[line]+'GHz', ", source: ", field, "###############")
         print ( "parameters (start, width, nchan) :", startdict[line], widthdict[line]+'km/s', nchandict[line])
 
