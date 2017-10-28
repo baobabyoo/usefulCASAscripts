@@ -8,6 +8,7 @@
    Version:
       v0: Created by Baobab Liu on 2017Oct16. 
           This version is based on CASA 5.0.0-218
+      v0.1: Updated on 2017Oct28. Switched over to CASA 5.1.1
 
    Usage:
       Include the line rest frequencies in the file linebasecasa.py.
@@ -21,11 +22,14 @@
       cannot make the sensible decision.
 
 """
+import sys
+sys.path.append('./')
+
 from linebasecasa import *  # importing line database
 import importlib            # the lib to permit reloading module
 import os.path
 import numpy as np
-
+import math
 
 # Calibration
 
@@ -34,7 +38,7 @@ step_title = {
                0: 'Split spectral line data',
               }
 
-debugging = False
+debugging = True
 
 
 try:
@@ -50,15 +54,17 @@ if (thesteps==[]):
 nchandict = {}
 startdict = {}
 widthdict = {}
+vlsrdict  = {}
+phaserefdict = {}
 
 # the specified lines to be splitted from the measurement sets
 linetosplit  = [
                 # done splitting
-                # 'h30alpha', 
-                # 'he30alpha'
-                # 'c30alpha',
-                # '13cs_5to4',
-                # 'sio_5to4'
+                 'h30alpha', 
+                 'he30alpha',
+                 'c30alpha',
+                 '13cs_5to4',
+                 'sio_5to4',
                 # to be splitted
                 'c-c3h2_3l3c0to2l2c1',
                 'ccd_N3to2_J7o2to5o2_F9o2to7o2',
@@ -106,7 +112,6 @@ linetosplit  = [
                 'ch3och3_13l0c13to12l1c12_EE',
                 'h2c34S_7l1c7to6l1c6'
                ]
-
 
 
 narrowline = [
@@ -196,6 +201,18 @@ for line in rrl:
 fieldtosplit = [
                 'G33.92+0.11'
                ]
+
+vlsrdict['G33.92+0.11'] = 107.6
+
+phaserefdict['G33.92+0.11'] = {
+                               'rah': 18.0,
+                               'ram': 52.0,
+                               'ras': 50.272,
+                               'decd': 0.0,
+                               'decm': 55.0,
+                               'decs': 29.604
+                              }
+
 ####################################################
 
 
@@ -261,8 +278,31 @@ vistosplit = [
 
 
 
+
+# a function to return a string for ra and dec, which is required for evaluating dopper velocity by the spwpick function
+def get_radecstr(field, phaserefdict):
+
+   ra = phaserefdict[field]['rah'] + phaserefdict[field]['ram'] / 60.0 + phaserefdict[field]['ras'] / 3600.0
+   ra = ra * 15.0
+   ra_str = str(ra) + 'deg'
+
+   if ( phaserefdict[field]['decd'] >= 0.0 ):
+     dec = phaserefdict[field]['decd'] + phaserefdict[field]['decm'] / 60.0 + phaserefdict[field]['decs'] / 3600.0
+   else:
+     dec = phaserefdict[field]['decd'] - phaserefdict[field]['decm'] / 60.0 - phaserefdict[field]['decs'] / 3600.0
+
+   dec_str = str(dec) + 'deg'
+
+   radec_str = ra_str + ' ' + dec_str
+   return radec_str
+
+
+
+
+
+
 # a function to pick the appropriate spectral window to split
-def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
+def spwpick(msname, restfreq, radec_str, vlsr_kmpers=0.0, velwidth=0.0, maskedspw=[]):
    """
    Purpose:
       From the input ms, based on the specified rest frequency,
@@ -278,6 +318,8 @@ def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
    Input:
       manam [string]: the name (or path+name) of the CASA measurement set to be split.
       restfreq [float]: rest frequency in unit of Hz.
+      radec_str [string]: the RA and DEC of the field for doppler tracking
+      vlsr_kmpers [float]: velocity in the LSRK frame, in unit of km/s
       velwidth [float]: channel width in km/s (optional)
       maskedspw [string array]: an array like ['0','1','2'] of masked spectral windows of the
                                 input CASA measurement set
@@ -300,52 +342,77 @@ def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
 
    # Deciding in which spw is the selected line (without considering doppler velocity yet)
    ms.open(msname)
+   msmd.open(msname)
 
    # get all spectral window IDs other than those associated with square law detectors  
    spwInfo = ms.getspectralwindowinfo()
 
    ###############################################################################
-#   scanInfo  = ms.getscansummary()
-#   num_scan  = len( scanInfo.keys() )
-#   begintime = 0.0
-#   # deriving the averaged begin time from all scans
-#   for scan in scanInfo.keys():
-#      begintime += scanInfo[scan]['0']['BeginTime'] / num_scan
-#   print( begintime )
-#
-#   # define a coordinate system for executing frequency frame transformation
-#   csys = cs.newcoordsys(direction=True, spectral=True)  
-#   # print csys.summary(list=False)  
-# 
-#   # reset the epoch to the epoch of the observing time
-#   ep = csys.epoch()
-#   ep['m0']['value'] = begintime
-#   csys.setepoch(ep)
-#   ep = csys.epoch()
-#
-#   # reset the observatory to ALMA
-#   csys.settelescope('ALMA')
-#
-#   # reset the direction to target source coordinate
-#   csys.setdirection (refcode='J2000', proj='SIN', projpar=[0,0],  
-#                   refpix=[0, 0], refval="180deg -20deg")
-#   print csys.projection()
-#   print csys.referencepixel()
-#   print csys.referencevalue(format='s')
-#
-#   # print csys.summary(list=False)
-#    
-#   ###############################################################################
+   scanInfo  = ms.getscansummary()
+   num_scan  = len( scanInfo.keys() )
+   begintime = 0.0
+   # deriving the averaged begin time from all scans
+   for scan in scanInfo.keys():
+      begintime += scanInfo[scan]['0']['BeginTime'] / num_scan
+   # print( begintime )
 
-   # make the black list here by editing spwInfo:
-   # print ( spwInfo )
+   # define a coordinate system for executing frequency frame transformation
+   csys = cs.newcoordsys(direction=True, spectral=True)  
+    # print csys.summary(list=False)  
+   
+   # reset the spectral reference to topocentric coordinate system
+   csys.setreferencecode('TOPO', 'spectral', True) 
+
+   # reset the epoch to the epoch of the observing time
+   ep = csys.epoch()
+   ep['m0']['value'] = begintime
+   csys.setepoch(ep)
+   ep = csys.epoch()
+
+   # reset the observatory to the actual telescope name
+   telescope_names = msmd.observatorynames() # 'ALMA'
+   csys.settelescope( telescope_names[0] )
+
+   # obtain target source direction
+   # sourcedirs = msmd.sourceidsfromsourcetable()
+   # print('#####', sourcedirs , '#####')
+
+   # reset the direction to target source coordinate
+   csys.setdirection (refcode='J2000', proj='SIN', projpar=[0,0],  
+                   refpix=[0, 0], refval=radec_str)
+
+   # reset the reference frequency
+   csys.setreferencevalue(type='spec', value=(restfreq) ) 
+   csys.setrestfrequency( qa.quantity(str(restfreq / 1e9) + 'GHz') )
+   # print ( csys.referencecode('spectral', True) )
+   # ['REST', 'LSRK', 'LSRD', 'BARY', 'GEO', 'TOPO', 'GALACTO', 'LGROUP', 'CMB', 'Undefined']
+
+   # specify converting a pixel to LSRK world
+   pixel = [0,0,0]
+   csys.setconversiontype(spectral='LSRK')
+   world_lsrk = csys.toworld(pixel, format='n')
+
+   # evaluating the approximated frequency offset due to doppler tracking
+   doppler_freq = world_lsrk['numeric'][2] - restfreq
+
+
+   # print csys.referencecode(type='spectral')
+   # print csys.projection()
+   # print csys.referencepixel()
+   # print csys.referencevalue(format='s')
+   # print csys.restfrequency()
+   # print csys.summary(list=False)
+    
+#   ###############################################################################
 
    # initialize return
    yourspw    = -1
    spwHzwidth = 0.0
 
-   vlsr_kmpers  = 107.6 # km/s
-   doppler_freq = restfreq * ( vlsr_kmpers / c_kmpers )
+   redshifted_freq = restfreq * math.sqrt(
+                                       ( 1.0 - ( vlsr_kmpers / c_kmpers ) ) /
+                                       ( 1.0 + ( vlsr_kmpers / c_kmpers ) )
+                                         )
 
    for window in spwInfo:
       if ( window not in maskedspw ):
@@ -363,13 +430,14 @@ def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
             bandlow = spwInfo[window]['Chan1Freq'] - spwInfo[window]['TotalWidth']
             bandup  = spwInfo[window]['Chan1Freq']
 
+         # converting from topocentric velocity frame to lsrk
          bandlow = bandlow + doppler_freq
          bandup  = bandup  + doppler_freq
 
          if (
-             ( restfreq > bandlow )
+             ( redshifted_freq > bandlow )
              and
-             ( restfreq < bandup )
+             ( redshifted_freq < bandup )
             ):
 
 
@@ -395,6 +463,7 @@ def spwpick(msname, restfreq, velwidth=0.0, maskedspw=[]):
                yourspw = spwInfo[window]['SpectralWindowId']
 
    ms.close()
+   msmd.done()
    return yourspw
 
 
@@ -477,11 +546,12 @@ if(mystep in thesteps):
            # picking the right spectral window
            msname   = pathdict[vis] + visdict[vis]
            linefreq = float( freqdict[line] ) * 1e9
+           radec_str = get_radecstr(field, phaserefdict)
 
            if ( num_maskedspw == 0 ):           
-              yourspw = spwpick(msname, linefreq, widthdict[line])
+              yourspw = spwpick(msname, linefreq, radec_str, vlsrdict[field], widthdict[line])
            else:
-              yourspw = spwpick(msname, linefreq, widthdict[line], maskedspw)
+              yourspw = spwpick(msname, linefreq, radec_str, vlsrdict[field], widthdict[line], maskedspw)
 
 
            if (
@@ -490,7 +560,7 @@ if(mystep in thesteps):
               print ( line, ' is in spectral window :', yourspw )
 
               # defining output filename
-              outputvis = visdict[vis] + '.' + line
+              outputvis = visdict[vis] + '.' + line + '.' + field
               print ("Splitting visibility: ", outputvis)
 
               os.system('rm -rf ' + outputvis )
