@@ -31,6 +31,13 @@ import os.path
 import numpy as np
 import math
 
+# while True:
+#     if is_changed(linebasecasa):
+#         foo = reload(foo)
+
+
+
+
 # Calibration
 
 thesteps = []
@@ -38,7 +45,7 @@ step_title = {
                0: 'Split spectral line data',
               }
 
-debugging = True
+debugging = False
 
 
 try:
@@ -60,68 +67,23 @@ phaserefdict = {}
 # the specified lines to be splitted from the measurement sets
 linetosplit  = [
                 # done splitting
-                 'h30alpha', 
-                 'he30alpha',
-                 'c30alpha',
-                 '13cs_5to4',
-                 'sio_5to4',
                 # to be splitted
-                'c-c3h2_3l3c0to2l2c1',
-                'ccd_N3to2_J7o2to5o2_F9o2to7o2',
-                'ccd_N3to2_J7o2to5o2_F7o2to5o2',
-                'ccd_N3to2_J5o2to3o2_F7o2to5o2',
-                'ccd_N3to2_J5o2to3o2_F3o2to1o2',
-                'ch3cho_11l1c10to10l1c9_E',
-                'ch3cho_11l1c10to10l1c9_A',
-                'hdcs_7l0c7to6l0c6',
-                'hdcs_7l2c6to6l2c5',
-                'hdcs_7l2c5to6l2c4',
-                'h2s_2l2c0to2l1c1',
-                'ch3oh_5l1c4to4l2c2',
-                'dcn_3to2',
-                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to1',
-                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to2',
-                '13cn_N2to1_J3o2to1o2_Fone1to0_F0to1',
-                '13cn_N2to1_J3o2to1o2_Fone1to0_F1to1',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to2',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to1',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to0',
-                '13cn_N2to1_J5o2to3o2_Fone2to2_F2to2',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to1',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F3to2',
-                '13cn_N2to1_J3o2to1o2_Fone1to0_F2to1',
-                '13cn_N2to1_J5o2to3o2_Fone2to2_F3to3',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F3to2',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to1',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to2',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F1to1',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F4to3',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to1',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to2',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F3to3',
-                't-c2h5oh_5l3c3-4l2c2',
-                'c-hccch_6l1c6-5l0c5',
-                'c-hccch_5l1c4-4l2c3',
-                'ch3cn_12to11_K4',
-                'ch3cn_12to11_K3',
-                'ch3cn_12to11_K2',
-                'ch3cn_12to11_K1',
-                'ch3cn_12to11_K0',
+                'co_2to1',
+                '13co_2to1',
+                'c18o_2to1',
+                'so3Sigma_6l5to5l4',
+                'sio_5to4',
+                'h30alpha',
                 'ocs_19to18',
                 'n2dp_3to2',
-                'ch3och3_13l0c13to12l1c12_EE',
-                'h2c34S_7l1c7to6l1c6'
                ]
 
 
 narrowline = [
-              '13cs_5to4',
-              'ch3cn_12to11_K4',
-              'ch3cn_12to11_K3',
-              'ch3cn_12to11_K2',
-              'ch3cn_12to11_K1',
-              'ch3cn_12to11_K0',
-              'n2dp_3to2'  # may need to do this one again. not sure if the velocity range of spw 0 is sufficient
+              'co_2to1',
+              '13co_2to1',
+              'c18o_2to1',
+              'so3Sigma_6l5to5l4'
              ]
 
 broadline  = [
@@ -129,69 +91,32 @@ broadline  = [
              ]
 
 narrowline_coarse  = [
-                'c-c3h2_3l3c0to2l2c1',
-                'ccd_N3to2_J7o2to5o2_F9o2to7o2',
-                'ccd_N3to2_J7o2to5o2_F7o2to5o2',
-                'ccd_N3to2_J5o2to3o2_F7o2to5o2',
-                'ccd_N3to2_J5o2to3o2_F3o2to1o2',
-                'ch3cho_11l1c10to10l1c9_E',
-                'ch3cho_11l1c10to10l1c9_A',
-                'hdcs_7l0c7to6l0c6',
-                'hdcs_7l2c6to6l2c5',
-                'hdcs_7l2c5to6l2c4',
-                'h2s_2l2c0to2l1c1',
-                'ch3oh_5l1c4to4l2c2',
-                'dcn_3to2',
-                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to1',
-                '13cn_N2to1_J3o2to3o2_Fone1to1_F2to2',
-                '13cn_N2to1_J3o2to1o2_Fone1to0_F0to1',
-                '13cn_N2to1_J3o2to1o2_Fone1to0_F1to1',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to2',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to1',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F1to0',
-                '13cn_N2to1_J5o2to3o2_Fone2to2_F2to2',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F2to1',
-                '13cn_N2to1_J3o2to1o2_Fone2to1_F3to2',
-                '13cn_N2to1_J3o2to1o2_Fone1to0_F2to1',
-                '13cn_N2to1_J5o2to3o2_Fone2to2_F3to3',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F3to2',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to1',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F2to2',
-                '13cn_N2to1_J5o2to3o2_Fone2to1_F1to1',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F4to3',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to1',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F2to2',
-                '13cn_N2to1_J5o2to3o2_Fone3to2_F3to3',
-                't-c2h5oh_5l3c3-4l2c2',
-                'c-hccch_6l1c6-5l0c5',
-                'c-hccch_5l1c4-4l2c3',
                 'ocs_19to18',
-                'ch3och3_13l0c13to12l1c12_EE',
-                'h2c34S_7l1c7to6l1c6'
+                'n2dp_3to2',
              ]
 
-rrl = ['h30alpha', 'he30alpha', 'c30alpha']
+rrl = ['h30alpha']
 
 
 
 for line in narrowline:
-   nchandict[line] =  80
-   startdict[line] =  '100.0 km/s'
-   widthdict[line] =  '0.18' # km/s
+   nchandict[line] =  180
+   startdict[line] =  '-1.0km/s'
+   widthdict[line] =  '0.17' # km/s
 
 for line in broadline:
-   nchandict[line] =  140
-   startdict[line] =  '8.0km/s'
+   nchandict[line] =  70
+   startdict[line] =  '-36.0km/s'
    widthdict[line] =  '1.4' # km/s
 
 for line in narrowline_coarse:
-   nchandict[line] =  10
-   startdict[line] =  '100.0km/s'
+   nchandict[line] =  22
+   startdict[line] =  '-1.0km/s'
    widthdict[line] =  '1.4' # km/s
 
 for line in rrl:
-   nchandict[line] =  140
-   startdict[line] =  '8.0km/s'
+   nchandict[line] =  70
+   startdict[line] =  '-36.0km/s'
    widthdict[line] =  '1.4' # km/s
 
 
@@ -199,19 +124,32 @@ for line in rrl:
 
 
 fieldtosplit = [
-                'G33.92+0.11'
+                'Z_CMa',
+                'z_cma'
                ]
 
-vlsrdict['G33.92+0.11'] = 107.6
+vlsrdict['Z_CMa'] = 14.0
+vlsrdict['z_cma'] = 14.0
 
-phaserefdict['G33.92+0.11'] = {
-                               'rah': 18.0,
-                               'ram': 52.0,
-                               'ras': 50.272,
-                               'decd': 0.0,
-                               'decm': 55.0,
-                               'decs': 29.604
+
+phaserefdict['Z_CMa'] = {
+                               'rah': 7.0,
+                               'ram': 3.0,
+                               'ras': 43.1643,
+                               'decd': -11.0,
+                               'decm': 33.0,
+                               'decs': 06.220
                               }
+
+phaserefdict['z_cma'] = {
+                               'rah': 7.0,
+                               'ram': 3.0,
+                               'ras': 43.1643,
+                               'decd': -11.0,
+                               'decm': 33.0,
+                               'decs': 06.220
+                              }
+
 
 ####################################################
 
@@ -222,53 +160,24 @@ visdict     = {}
 
 # ACA data taken in cycle-1
 DATApath = '/scigarfs/opsw/work/hlu/DATA'
-subpath_cycle1aca = '/G33p92/2012.1.00387.S/cal_2017Oct/7m/calibrated_ms/'
-
-pathdict['aca_ms1'] = DATApath + subpath_cycle1aca
-pathdict['aca_ms2'] = DATApath + subpath_cycle1aca
-pathdict['aca_ms3'] = DATApath + subpath_cycle1aca
-pathdict['aca_ms4'] = DATApath + subpath_cycle1aca
-
-visdict['aca_ms1'] = 'uid___A002_X8081ba_X2f08.ms.split.cal.contsub'
-visdict['aca_ms2'] = 'uid___A002_X8081ba_X32b1.ms.split.cal.contsub'
-visdict['aca_ms3'] = 'uid___A002_X8081ba_X3635.ms.split.cal.contsub'
-visdict['aca_ms4'] = 'uid___A002_X8081ba_X55f.ms.split.cal.contsub'
+subpath_cycle412msel = '/ZCMa/2016.1.00110.S/cal/selcal_ms/'
+pathdict['12m_ms1'] = DATApath + subpath_cycle412msel
+visdict['12m_ms1']  = 'uid___A002_Xb99cbd_X1f97.ms.split.cal.contsub.sel'
 
 
-# main array data taken in cycle-1
+# aca data taken in cycle-4
 DATApath = '/scigarfs/opsw/work/hlu/DATA'
-subpath_cycle112m = '/G33p92/2012.1.00387.S/cal_2017Oct/12m/calibrated_ms/'
-
-pathdict['12m_ms1'] = DATApath + subpath_cycle112m 
-pathdict['12m_ms2'] = DATApath + subpath_cycle112m
-
-visdict['12m_ms1'] = 'uid___A002_X80199b_Xb2.ms.split.cal.contsub'
-visdict['12m_ms2'] = 'uid___A002_X8081ba_X31e3.ms.split.cal.contsub'
-
-
-# main array data taken in cycle-4
-DATApath = '/scigarfs/opsw/work/hlu/DATA'
-subpath_cycle412m = '/G33p92/2016.1.00362.S/cal/calibrated_ms/'
-
-pathdict['12m_ms3'] = DATApath + subpath_cycle412m
-pathdict['12m_ms4'] = DATApath + subpath_cycle412m
-
-visdict['12m_ms3'] = 'uid___A002_Xc384d6_X192d.ms.split.cal.contsub'
-visdict['12m_ms4'] = 'uid___A002_Xc384d6_X1fb8.ms.split.cal.contsub'
+subpath_cycle4aca = '/ZCMa/2016.2.00168.S/cal/calibrated_ms/'
+pathdict['aca_ms1'] = DATApath + subpath_cycle4aca
+visdict['aca_ms1'] = 'uid___A002_Xc1e2be_X4475.ms.split.cal.contsub'
 
 
 # a black list to describe which spw of a certain ms file should not be readed
-blacklist_file = 'g33p92_blacklist.txt'
+blacklist_file = 'no_blacklist.txt'
 
 vistosplit = [
               'aca_ms1', 
-              'aca_ms2', 
-              'aca_ms3', 
-              'aca_ms4',
               '12m_ms1',
-              '12m_ms2',
-              '12m_ms3',
-              '12m_ms4'
              ]
 
 ###################################################
@@ -520,15 +429,17 @@ if(mystep in thesteps):
 
 
   for line in linetosplit:
+
+     # creating a directory for storing the splitted line data
+     os.system('rm -rf %s'%line)
+     os.mkdir('./%s'%line)
+
+
      for field in fieldtosplit:
 
-        print ( "\n")
+        print ( "\n\n")
         print ( "###########  Splitting :", line, 'at', freqdict[line]+'GHz', ", source: ", field, "###############")
         print ( "parameters (start, width, nchan) :", startdict[line], widthdict[line]+'km/s', nchandict[line])
-
-        # creating a directory for storing the splitted line data
-        os.system('rm -rf %s'%line)
-        os.mkdir('./%s'%line)
 
         for vis in vistosplit:
 

@@ -88,6 +88,12 @@ freqdict['c-hccch_6l1c6-5l0c5']  = '217.82215'  # c-HCCCH 6$_{1,6}$-5$_{0,5}$,  
 
 freqdict['c-hccch_5l1c4-4l2c3']  = '217.94005'  # c-HCCCH 5$_{1,4}$-4$_{2,3}$,  Eu = 35.4 K
 
+freqdict['c18o_2to1']            =  '219.56035680'    # C18O J=2-1,  Eu = 15.80580 K
+
+freqdict['so3Sigma_6l5to5l4']    =  '219.94944200'    # SO $^{3}\Sigma$ 6(5)-5(4),  Eu = 34.98470 K
+
+freqdict['13co_2to1']   =  '220.39867650'    # 13CO J=2-1,  Eu = 15.86618 K
+
 freqdict['ch3cn_12to11_K4'] = '220.67929'  # CH$_{3}$CN J=12-11, K=4,  Eu = 183.1
 
 freqdict['ch3cn_12to11_K3'] = '220.70902'  # CH$_{3}$CN J=12-11, K=3,  Eu = 133.2
@@ -97,6 +103,8 @@ freqdict['ch3cn_12to11_K2'] = '220.73026'  # CH$_{3}$CN J=12-11, K=2,  Eu = 97.4
 freqdict['ch3cn_12to11_K1'] = '220.74301'  # CH$_{3}$CN J=12-11, K=1,  Eu = 76.0 K
 
 freqdict['ch3cn_12to11_K0'] = '220.74726'  # CH$_{3}$CN J=12-11, K=0,  Eu = 68.9 K
+
+freqdict['co_2to1']   =  '230.53800000'    # 12CO J=2-1,  Eu = 16.59608 K
 
 freqdict['ocs_19to18'] = '231.06099'  # OCS J=19-18,  Eu = 110.9 K
 
